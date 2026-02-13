@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,18 +25,21 @@
         /* Info UI */
         .info-box { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; text-align: left; margin: 20px 0; border-left: 4px solid var(--accent); }
         .highlight { color: #f1c40f; font-weight: bold; }
+        .map-btn { display: inline-block; margin-top: 10px; color: #3498db; text-decoration: none; font-size: 0.85rem; font-weight: bold; }
         
         /* Booking Form */
         .booking-form { background: #222; padding: 20px; border-radius: 15px; margin-top: 20px; text-align: left; display: none; border: 1px solid #444; }
         label { display: block; font-size: 0.75rem; color: #888; margin-bottom: 5px; margin-top: 10px; }
         input { width: 100%; padding: 12px; background: #333; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; outline: none; }
-        input:focus { border-color: var(--accent); }
         
         /* Buttons */
-        .btn { display: block; width: 100%; background: var(--accent); color: white; padding: 16px; border: none; border-radius: 12px; font-weight: bold; margin-top: 15px; cursor: pointer; font-size: 1rem; transition: 0.2s; }
+        .btn { display: block; width: 100%; background: var(--accent); color: white; padding: 16px; border: none; border-radius: 12px; font-weight: bold; margin-top: 15px; cursor: pointer; font-size: 1rem; transition: 0.2s; text-decoration: none; }
         .btn:hover { transform: translateY(-2px); opacity: 0.9; }
-        .btn:disabled { background: #444; cursor: not-allowed; transform: none; }
         
+        /* Social Link */
+        .fb-link { display: inline-block; margin-top: 25px; color: #1877F2; text-decoration: none; font-size: 0.9rem; font-weight: bold; border: 1px solid #1877F2; padding: 10px 20px; border-radius: 50px; transition: 0.3s; }
+        .fb-link:hover { background: #1877F2; color: white; }
+
         #admin-page, #success-msg { display: none; }
         .status-tag { font-size: 0.75rem; color: #2ecc71; display: block; margin-top: 8px; font-weight: bold; letter-spacing: 1px; }
     </style>
@@ -57,8 +61,9 @@
             
             <div class="info-box">
                 📅 <b>Date:</b> <span id="d-date" class="highlight">...</span><br>
-                ⏰ <b>Time:</b> <span id="d-time" class="highlight">...</span><br>
-                📍 <b>Venue:</b> <span class="highlight">Empty Space</span>
+                ⏰ <b>Time:</b> <span class="highlight">6:30 PM</span><br>
+                📍 <b>Venue:</b> <span class="highlight">Empty Space</span><br>
+                <a href="https://maps.google.com/?q=Alternative+Living+Theatre+Kolkata" target="_blank" class="map-btn">📍 View on Google Maps</a>
                 <span class="status-tag">● PAY CASH/UPI AT THE DOOR</span>
             </div>
 
@@ -70,16 +75,12 @@
 
             <div id="booking-area" class="booking-form">
                 <h3 style="margin-top:0; color:var(--price);">Reservation Details</h3>
-                
                 <label>Full Name</label>
                 <input type="text" id="u-name" placeholder="Enter your name">
-                
                 <label>Phone Number</label>
                 <input type="tel" id="u-phone" placeholder="WhatsApp Number">
-                
                 <label>Number of Tickets</label>
                 <input type="number" id="u-count" value="1" min="1" max="10">
-                
                 <button onclick="sendBooking()" id="confirm-btn" class="btn" style="background:var(--price); color:black;">CONFIRM RESERVATION</button>
                 <button onclick="closeBooking()" style="background:none; border:none; color:#888; width:100%; margin-top:10px; cursor:pointer;">Cancel</button>
             </div>
@@ -87,50 +88,44 @@
             <div id="success-msg">
                 <div style="font-size: 4rem; margin-bottom: 10px;">✅</div>
                 <h2 style="color:var(--price); margin:0;">RESERVED!</h2>
-                <p>We have held your seats. Please arrive 15 mins early to pay at the door.</p>
+                <p>We've saved your seats for 6:30 PM. Please arrive 15 mins early.</p>
                 <button onclick="window.location.reload()" class="btn">Done</button>
             </div>
+
+            <a href="https://www.facebook.com/inSearchOfAlternatives?rdid=O5m5lrwWnaULLTzO&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1Ah8oyAqrz%2F#" target="_blank" class="fb-link">
+                Follow us on Facebook
+            </a>
         </div>
     </div>
 
     <div id="admin-page" class="container">
         <div class="show-card" style="text-align: left;">
             <h2 style="color:var(--price); margin-top:0;">Update Show Info</h2>
-            
             <label>Performance Title</label><input type="text" id="i-title">
             <label>Price (₹)</label><input type="number" id="i-price">
             <label>Date</label><input type="text" id="i-date">
-            <label>Time</label><input type="text" id="i-time">
             <label>Total Seating Capacity</label><input type="number" id="i-max">
-            
             <button class="btn" id="saveBtn" onclick="saveAdminData()">SAVE & UPDATE SITE</button>
             <button onclick="window.location.reload()" style="background:none; border:none; color:#888; width:100%; margin-top:10px; cursor:pointer;">Exit Admin</button>
         </div>
     </div>
 
     <script>
-        // 1. SET YOUR URL HERE
         const API_URL = 'https://script.google.com/macros/s/AKfycbyxArj9vR8uefUnBgJuOgEqZvKcagD3q9BVSs_UFaqq4mBy49QyLy6z0-6Hvl-B0djI/exec';
         const PASS = "2022";
 
-        // 2. LOAD DATA ON START
         async function loadData() {
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
-                
-                // Update Main Display
                 document.getElementById('d-title').innerText = data.name;
                 document.getElementById('d-price').innerText = data.price;
                 document.getElementById('d-date').innerText = data.date;
-                document.getElementById('d-time').innerText = data.time;
                 document.getElementById('d-seats').innerText = data.remainingSeats;
 
-                // Pre-fill Admin Inputs
                 document.getElementById('i-title').value = data.name;
                 document.getElementById('i-price').value = data.price;
                 document.getElementById('i-date').value = data.date;
-                document.getElementById('i-time').value = data.time;
                 document.getElementById('i-max').value = data.maxSeats;
 
                 if(data.remainingSeats <= 0) {
@@ -141,7 +136,6 @@
             } catch (e) { console.error("Could not load data."); }
         }
 
-        // 3. UI TOGGLES
         function openBooking() {
             document.getElementById('main-book-btn').style.display = 'none';
             document.getElementById('booking-area').style.display = 'block';
@@ -151,18 +145,14 @@
             document.getElementById('booking-area').style.display = 'none';
         }
 
-        // 4. SUBMIT RESERVATION (POST)
         async function sendBooking() {
             const name = document.getElementById('u-name').value;
             const phone = document.getElementById('u-phone').value;
             const count = document.getElementById('u-count').value;
-
-            if(!name || !phone) return alert("Please enter your name and phone.");
-
+            if(!name || !phone) return alert("Please enter name and phone.");
             const btn = document.getElementById('confirm-btn');
             btn.innerText = "Reserving...";
             btn.disabled = true;
-
             try {
                 await fetch(API_URL, {
                     method: 'POST',
@@ -171,13 +161,12 @@
                 document.getElementById('booking-area').style.display = 'none';
                 document.getElementById('success-msg').style.display = 'block';
             } catch (e) { 
-                alert("Booking failed. Check connection.");
+                alert("Booking failed.");
                 btn.disabled = false;
                 btn.innerText = "CONFIRM RESERVATION";
             }
         }
 
-        // 5. ADMIN FUNCTIONS
         function adminLogin() {
             if (prompt("Enter Admin PIN:") === PASS) {
                 document.getElementById('home-page').style.display = 'none';
@@ -192,24 +181,17 @@
                 name: document.getElementById('i-title').value,
                 price: document.getElementById('i-price').value,
                 date: document.getElementById('i-date').value,
-                time: document.getElementById('i-time').value,
+                time: "6:30 PM", // Fixed time
                 maxSeats: document.getElementById('i-max').value
             };
-
             btn.innerText = "Saving Changes...";
             btn.disabled = true;
-
             try {
                 await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
                 window.location.reload();
-            } catch (e) { 
-                alert("Update failed."); 
-                btn.disabled = false;
-            }
+            } catch (e) { alert("Update failed."); btn.disabled = false; }
         }
-
         loadData();
     </script>
 </body>
-
 </html>
