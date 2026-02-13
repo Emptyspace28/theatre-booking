@@ -10,37 +10,37 @@
         
         /* Navigation */
         nav { background: #000; padding: 15px 5%; display: flex; justify-content: space-between; border-bottom: 1px solid #333; align-items: center; }
-        .logo { font-weight: bold; color: #888; font-size: 0.8rem; letter-spacing: 2px; }
-        .menu a { color: white; text-decoration: none; margin-left: 20px; font-size: 0.9rem; cursor: pointer; transition: 0.3s; }
-        .menu a:hover { color: var(--accent); }
+        .logo { font-weight: bold; color: #888; font-size: 0.7rem; letter-spacing: 1px; }
+        .menu a { color: white; text-decoration: none; margin-left: 15px; font-size: 0.8rem; cursor: pointer; }
+        
+        /* Language Switcher */
+        .lang-switch { display: flex; gap: 5px; margin-top: 10px; justify-content: center; }
+        .lang-btn { background: #222; color: white; border: 1px solid #444; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; }
+        .lang-btn.active { background: var(--accent); border-color: var(--accent); }
 
-        .container { width: 95%; max-width: 420px; margin: 40px auto; text-align: center; }
-        
-        /* Show Card */
-        .show-card { background: var(--card); padding: 30px; border-radius: 24px; border: 1px solid #2a2a2a; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.3s; }
+        .container { width: 95%; max-width: 420px; margin: 20px auto; text-align: center; }
+        .show-card { background: var(--card); padding: 30px; border-radius: 24px; border: 1px solid #2a2a2a; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .price-badge { background: var(--price); color: #000; font-weight: bold; padding: 8px 15px; border-radius: 0 20px 0 20px; position: absolute; top: 0; right: 0; font-size: 1.1rem; }
-        .show-title { font-size: 2rem; color: var(--accent); margin: 25px 0 15px; font-weight: 800; line-height: 1.2; }
+        .show-title { font-size: 1.8rem; color: var(--accent); margin: 25px 0 15px; font-weight: 800; line-height: 1.2; }
         
-        /* Info UI */
         .info-box { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; text-align: left; margin: 20px 0; border-left: 4px solid var(--accent); }
         .highlight { color: #f1c40f; font-weight: bold; }
-        .map-btn { display: inline-block; margin-top: 10px; color: #3498db; text-decoration: none; font-size: 0.85rem; font-weight: bold; }
         
-        /* Booking Form */
-        .booking-form { background: #222; padding: 20px; border-radius: 15px; margin-top: 20px; text-align: left; display: none; border: 1px solid #444; }
-        label { display: block; font-size: 0.75rem; color: #888; margin-bottom: 5px; margin-top: 10px; }
-        input { width: 100%; padding: 12px; background: #333; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; outline: none; }
-        
-        /* Buttons */
-        .btn { display: block; width: 100%; background: var(--accent); color: white; padding: 16px; border: none; border-radius: 12px; font-weight: bold; margin-top: 15px; cursor: pointer; font-size: 1rem; transition: 0.2s; text-decoration: none; }
-        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
-        
-        /* Social Link */
-        .fb-link { display: inline-block; margin-top: 25px; color: #1877F2; text-decoration: none; font-size: 0.9rem; font-weight: bold; border: 1px solid #1877F2; padding: 10px 20px; border-radius: 50px; transition: 0.3s; }
-        .fb-link:hover { background: #1877F2; color: white; }
+        /* Payment Instruction Text */
+        .payment-info { color: var(--price); font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; letter-spacing: 0.5px; }
 
-        #admin-page, #success-msg { display: none; }
-        .status-tag { font-size: 0.75rem; color: #2ecc71; display: block; margin-top: 8px; font-weight: bold; letter-spacing: 1px; }
+        .contact-section { margin-top: 20px; padding-top: 15px; border-top: 1px solid #333; }
+        .contact-btn { display: inline-block; padding: 10px 12px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.8rem; margin: 5px; color: white; }
+        .btn-phone { background: #34495e; }
+        .btn-wa { background: #25D366; }
+
+        .btn { display: block; width: 100%; background: var(--accent); color: white; padding: 16px; border: none; border-radius: 12px; font-weight: bold; margin-top: 5px; cursor: pointer; font-size: 1rem; }
+        
+        .fb-link { display: inline-block; margin-top: 20px; color: #1877F2; text-decoration: none; font-size: 0.85rem; font-weight: bold; border: 1px solid #1877F2; padding: 8px 20px; border-radius: 50px; }
+
+        #admin-page, #success-msg, #booking-area { display: none; }
+        input { width: 100%; padding: 12px; margin: 8px 0; background: #333; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; }
+        label { display: block; text-align: left; font-size: 0.8rem; color: #888; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -49,125 +49,168 @@
         <div class="logo">ALTERNATIVE LIVING THEATRE</div>
         <div class="menu">
             <a onclick="window.location.reload()">Home</a>
-            <a onclick="adminLogin()">Admin Access</a>
+            <a onclick="adminLogin()">Admin</a>
         </div>
     </nav>
+
+    <div class="lang-switch">
+        <button class="lang-btn active" onclick="setLang('en', event)">EN</button>
+        <button class="lang-btn" onclick="setLang('hi', event)">हिंदी</button>
+        <button class="lang-btn" onclick="setLang('bn', event)">বাংলা</button>
+    </div>
 
     <div id="home-page" class="container">
         <div class="show-card">
             <div class="price-badge">₹<span id="d-price">...</span></div>
-            <div id="d-title" class="show-title">Fetching Show...</div>
+            <div id="d-title" class="show-title">Fetching...</div>
             
             <div class="info-box">
-                📅 <b>Date:</b> <span id="d-date" class="highlight">...</span><br>
-                ⏰ <b>Time:</b> <span class="highlight">6:30 PM</span><br>
-                📍 <b>Venue:</b> <span class="highlight">Empty Space</span><br>
-                <a href="https://maps.app.goo.gl/RnbMKgdZoAjgDEC19" target="_blank" class="map-btn">📍 View on Google Maps</a>
-                <span class="status-tag">● PAY CASH/UPI AT THE DOOR</span>
+                <span id="txt-date-lbl">📅 Date:</span> <span id="d-date" class="highlight">...</span><br>
+                <span id="txt-time-lbl">⏰ Time:</span> <span class="highlight">6:30 PM</span><br>
+                <span id="txt-venue-lbl">📍 Venue:</span> <span class="highlight">Empty Space</span><br>
+                <a href="https://www.google.com/maps/place/Alternative+Living+Theatre/@22.6912599,88.4668682,17.5z/data=!4m6!3m5!1s0x39f89f0034bb4b95:0x2f49df9a0522e01c!8m2!3d22.6902366!4d88.4663142!16s%2Fg%2F11yf_295vb?entry=tts&g_ep=EgoyMDI2MDIxMC4wIPu8ASoASAFQAw%3D%3D&skid=79bfe8fa-2271-4131-806e-eaee591cbfb5" target="_blank" style="color:#3498db; text-decoration:none; font-size:0.85rem; font-weight:bold;" id="txt-map-link">📍 Open in Google Maps</a>
             </div>
 
-            <div style="margin: 20px 0; font-size: 1.1rem; border: 1px dashed #444; padding: 15px; border-radius: 12px;">
-                🎟️ <b>Seats Left:</b> <span id="d-seats" class="highlight" style="font-size: 1.6rem;">--</span>
+            <div style="margin: 20px 0 10px; font-size: 1.1rem; border: 1px dashed #444; padding: 15px; border-radius: 12px;">
+                <span id="txt-seats-lbl">🎟️ Seats Left:</span> <span id="d-seats" class="highlight" style="font-size: 1.6rem;">--</span>
             </div>
+
+            <div class="payment-info" id="txt-pay-info">● PAY AT DOOR VIA CASH OR UPI</div>
 
             <button id="main-book-btn" onclick="openBooking()" class="btn">RESERVE MY SEATS</button>
 
-            <div id="booking-area" class="booking-form">
-                <h3 style="margin-top:0; color:var(--price);">Reservation Details</h3>
-                <label>Full Name</label>
-                <input type="text" id="u-name" placeholder="Enter your name">
-                <label>Phone Number</label>
-                <input type="tel" id="u-phone" placeholder="WhatsApp Number">
-                <label>Number of Tickets</label>
-                <input type="number" id="u-count" value="1" min="1" max="10">
+            <div id="booking-area">
+                <label id="lbl-name">Full Name</label>
+                <input type="text" id="u-name" placeholder="...">
+                <label id="lbl-phone">WhatsApp Number</label>
+                <input type="tel" id="u-phone" placeholder="...">
+                <label id="lbl-count">Number of Tickets</label>
+                <input type="number" id="u-count" value="1" min="1">
                 <button onclick="sendBooking()" id="confirm-btn" class="btn" style="background:var(--price); color:black;">CONFIRM RESERVATION</button>
-                <button onclick="closeBooking()" style="background:none; border:none; color:#888; width:100%; margin-top:10px; cursor:pointer;">Cancel</button>
             </div>
 
             <div id="success-msg">
-                <div style="font-size: 4rem; margin-bottom: 10px;">✅</div>
-                <h2 style="color:var(--price); margin:0;">RESERVED!</h2>
-                <p>We've saved your seats for 6:30 PM. Please arrive 15 mins early.</p>
-                <button onclick="window.location.reload()" class="btn">Done</button>
+                <h2 id="txt-success-title" style="color:var(--price)">RESERVED!</h2>
+                <p id="txt-success-msg">We've saved your seats. See you at the theatre!</p>
+                <button onclick="window.location.reload()" class="btn">OK</button>
             </div>
 
-            <a href="https://www.facebook.com/inSearchOfAlternatives?rdid=O5m5lrwWnaULLTzO&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1Ah8oyAqrz%2F#" target="_blank" class="fb-link">
-                Follow us on Facebook
-            </a>
+            <div class="contact-section">
+                <p id="txt-help-lbl" style="font-size: 0.75rem; color: #888; margin-bottom: 10px;">Need help?</p>
+                <a href="tel:+919674056496" class="contact-btn btn-phone" id="txt-call-btn">📞 Call</a>
+                <a href="https://wa.me/919674056496" class="contact-btn btn-wa" id="txt-wa-btn">💬 WhatsApp</a>
+            </div>
+
+            <a href="https://www.facebook.com/inSearchOfAlternatives/" target="_blank" class="fb-link">Follow us on Facebook</a>
         </div>
     </div>
 
     <div id="admin-page" class="container">
         <div class="show-card" style="text-align: left;">
-            <h2 style="color:var(--price); margin-top:0;">Update Show Info</h2>
-            <label>Performance Title</label><input type="text" id="i-title">
-            <label>Price (₹)</label><input type="number" id="i-price">
+            <h3 style="color:var(--price)">Admin Settings</h3>
+            <label>Show Name</label><input type="text" id="i-title">
+            <label>Price</label><input type="number" id="i-price">
             <label>Date</label><input type="text" id="i-date">
-            <label>Total Seating Capacity</label><input type="number" id="i-max">
+            <label>Total Capacity</label><input type="number" id="i-max">
             <button class="btn" id="saveBtn" onclick="saveAdminData()">SAVE & UPDATE SITE</button>
-            <button onclick="window.location.reload()" style="background:none; border:none; color:#888; width:100%; margin-top:10px; cursor:pointer;">Exit Admin</button>
         </div>
     </div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbyxArj9vR8uefUnBgJuOgEqZvKcagD3q9BVSs_UFaqq4mBy49QyLy6z0-6Hvl-B0djI/exec';
-        const PASS = "2022";
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyxArj9vR8uefUnBgJuOgEqZvKcagD3q9BVSs_UFaqq4mBy49QyLy6z0-6Hvl-B0djI/exec'; 
+
+        const translations = {
+            en: {
+                date: "📅 Date:", time: "⏰ Time:", venue: "📍 Venue:", map: "📍 Open in Google Maps",
+                seats: "🎟️ Seats Left:", payInfo: "● PAY AT DOOR VIA CASH OR UPI", book: "RESERVE MY SEATS", 
+                name: "Full Name", phone: "WhatsApp Number", count: "Number of Tickets", 
+                confirm: "CONFIRM RESERVATION", success: "RESERVED!", 
+                successMsg: "We've saved your seats for 6:30 PM. See you there!",
+                help: "Need help?", call: "📞 Call", wa: "💬 WhatsApp"
+            },
+            hi: {
+                date: "📅 दिनांक:", time: "⏰ समय:", venue: "📍 स्थान:", map: "📍 गूगल मैप्स पर देखें",
+                seats: "🎟️ सीटें बची हैं:", payInfo: "● नकद या UPI के माध्यम से गेट पर भुगतान करें", book: "अपनी सीटें बुक करें", 
+                name: "पूरा नाम", phone: "व्हाट्सएप नंबर", count: "टिकटों की संख्या", 
+                confirm: "बुकिंग पक्की करें", success: "सफल बुकिंग!", 
+                successMsg: "हमने आपकी सीटें 6:30 PM के लिए सुरक्षित कर ली हैं।",
+                help: "क्या आपको मदद चाहिए?", call: "📞 कॉल करें", wa: "💬 व्हाट्सएप"
+            },
+            bn: {
+                date: "📅 তারিখ:", time: "⏰ সময়:", venue: "📍 স্থান:", map: "📍 গুগল ম্যাপে দেখুন",
+                seats: "🎟️ আসন ফাঁকা আছে:", payInfo: "● গেটে ক্যাশ বা UPI-এর মাধ্যমে পেমেন্ট করুন", book: "আপনার আসন সংরক্ষণ করুন", 
+                name: "আপনার নাম", phone: "হোয়াটসঅ্যাপ নম্বর", count: "টিকিটের সংখ্যা", 
+                confirm: "বুকিং নিশ্চিত করুন", success: "বুকিং সফল!", 
+                successMsg: "আমরা সন্ধ্যা ৬:৩০-এর জন্য আপনার আসন সংরক্ষণ করেছি।",
+                help: "সাহায্য দরকার?", call: "📞 কল করুন", wa: "💬 হোয়াটসঅ্যাপ"
+            }
+        };
+
+        function setLang(lang, event) {
+            const t = translations[lang];
+            document.getElementById('txt-date-lbl').innerText = t.date;
+            document.getElementById('txt-time-lbl').innerText = t.time;
+            document.getElementById('txt-venue-lbl').innerText = t.venue;
+            document.getElementById('txt-map-link').innerText = t.map;
+            document.getElementById('txt-seats-lbl').innerText = t.seats;
+            document.getElementById('txt-pay-info').innerText = t.payInfo;
+            document.getElementById('main-book-btn').innerText = t.book;
+            document.getElementById('lbl-name').innerText = t.name;
+            document.getElementById('lbl-phone').innerText = t.phone;
+            document.getElementById('lbl-count').innerText = t.count;
+            document.getElementById('confirm-btn').innerText = t.confirm;
+            document.getElementById('txt-success-title').innerText = t.success;
+            document.getElementById('txt-success-msg').innerText = t.successMsg;
+            document.getElementById('txt-help-lbl').innerText = t.help;
+            document.getElementById('txt-call-btn').innerText = t.call;
+            document.getElementById('txt-wa-btn').innerText = t.wa;
+
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
 
         async function loadData() {
             try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
+                const res = await fetch(API_URL);
+                const data = await res.json();
                 document.getElementById('d-title').innerText = data.name;
                 document.getElementById('d-price').innerText = data.price;
                 document.getElementById('d-date').innerText = data.date;
                 document.getElementById('d-seats').innerText = data.remainingSeats;
-
+                
                 document.getElementById('i-title').value = data.name;
                 document.getElementById('i-price').value = data.price;
                 document.getElementById('i-date').value = data.date;
                 document.getElementById('i-max').value = data.maxSeats;
-
-                if(data.remainingSeats <= 0) {
-                    const b = document.getElementById('main-book-btn');
-                    b.innerText = "SOLD OUT";
-                    b.disabled = true;
-                }
-            } catch (e) { console.error("Could not load data."); }
+            } catch (e) { console.log("Load error"); }
         }
 
         function openBooking() {
             document.getElementById('main-book-btn').style.display = 'none';
+            document.getElementById('txt-pay-info').style.display = 'none';
             document.getElementById('booking-area').style.display = 'block';
-        }
-        function closeBooking() {
-            document.getElementById('main-book-btn').style.display = 'block';
-            document.getElementById('booking-area').style.display = 'none';
         }
 
         async function sendBooking() {
             const name = document.getElementById('u-name').value;
             const phone = document.getElementById('u-phone').value;
             const count = document.getElementById('u-count').value;
-            if(!name || !phone) return alert("Please enter name and phone.");
+            if(!name || !phone) return alert("Error: Missing Info");
+
             const btn = document.getElementById('confirm-btn');
-            btn.innerText = "Reserving...";
+            btn.innerText = "...";
             btn.disabled = true;
-            try {
-                await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "book", name: name, phone: phone, count: count })
-                });
-                document.getElementById('booking-area').style.display = 'none';
-                document.getElementById('success-msg').style.display = 'block';
-            } catch (e) { 
-                alert("Booking failed.");
-                btn.disabled = false;
-                btn.innerText = "CONFIRM RESERVATION";
-            }
+
+            await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "book", name: name, phone: phone, count: count })
+            });
+            document.getElementById('booking-area').style.display = 'none';
+            document.getElementById('success-msg').style.display = 'block';
         }
 
         function adminLogin() {
-            if (prompt("Enter Admin PIN:") === PASS) {
+            if (prompt("PIN:") === "2022") {
                 document.getElementById('home-page').style.display = 'none';
                 document.getElementById('admin-page').style.display = 'block';
             }
@@ -175,23 +218,20 @@
 
         async function saveAdminData() {
             const btn = document.getElementById('saveBtn');
+            btn.innerText = "Syncing...";
             const payload = {
                 action: "update",
                 name: document.getElementById('i-title').value,
                 price: document.getElementById('i-price').value,
                 date: document.getElementById('i-date').value,
-                time: "6:30 PM", // Fixed time
+                time: "6:30 PM",
                 maxSeats: document.getElementById('i-max').value
             };
-            btn.innerText = "Saving Changes...";
-            btn.disabled = true;
-            try {
-                await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-                window.location.reload();
-            } catch (e) { alert("Update failed."); btn.disabled = false; }
+            await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+            window.location.reload();
         }
+
         loadData();
     </script>
 </body>
 </html>
-
