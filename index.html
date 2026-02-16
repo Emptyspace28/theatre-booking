@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alternative Living Theatre | Live Booking</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
     <style>
         :root { --accent: #e74c3c; --bg: #0a0a0a; --card: #1a1a1a; --text: #ffffff; --price: #2ecc71; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; }
@@ -33,19 +37,28 @@
         .btn { display: block; width: 100%; background: var(--accent); color: white; padding: 16px; border: none; border-radius: 12px; font-weight: bold; margin-top: 5px; cursor: pointer; font-size: 1rem; }
         .fb-link { display: inline-block; margin-top: 20px; color: #1877F2; text-decoration: none; font-size: 0.85rem; font-weight: bold; border: 1px solid #1877F2; padding: 8px 20px; border-radius: 50px; }
 
-        #admin-page, #success-msg, #booking-area { display: none; }
+        #admin-page, #staff-page, #success-msg, #booking-area { display: none; }
+        .scan-result-box { background: #000; padding: 15px; border-radius: 12px; margin-top: 15px; text-align: left; border: 2px solid #444; display: none; }
+        .valid-border { border-color: var(--price) !important; }
+        .invalid-border { border-color: var(--accent) !important; }
+
         input { width: 100%; padding: 12px; margin: 8px 0; background: #333; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; }
         label { display: block; text-align: left; font-size: 0.8rem; color: #888; margin-top: 10px; }
+        #qrcode { background: white; padding: 15px; border-radius: 10px; display: inline-block; margin: 15px 0; }
     </style>
 </head>
 <body>
 
     <nav>
         <div class="logo">ALTERNATIVE LIVING THEATRE</div>
-        <div class="menu"><a onclick="window.location.reload()">Home</a><a onclick="adminLogin()">Admin</a></div>
+        <div class="menu">
+            <a onclick="window.location.reload()">Home</a>
+            <a onclick="staffLogin()">Scanner</a>
+            <a onclick="adminLogin()">Admin</a>
+        </div>
     </nav>
 
-    <div class="lang-switch">
+    <div class="lang-switch" id="lang-bar">
         <button class="lang-btn active" onclick="setLang('en', event)">EN</button>
         <button class="lang-btn" onclick="setLang('hi', event)">हिंदी</button>
         <button class="lang-btn" onclick="setLang('bn', event)">বাংলা</button>
@@ -60,7 +73,7 @@
                 <span id="txt-date-lbl">📅 Date:</span> <span id="d-date" class="highlight">...</span><br>
                 <span id="txt-time-lbl">⏰ Time:</span> <span class="highlight">6:30 PM</span><br>
                 <span id="txt-venue-lbl">📍 Venue:</span> <span class="highlight">Empty Space</span><br>
-                <a href="https://www.google.com/maps/place/Alternative+Living+Theatre/@22.6912599,88.4668682,17.5z/data=!4m6!3m5!1s0x39f89f0034bb4b95:0x2f49df9a0522e01c!8m2!3d22.6902366!4d88.4663142!16s%2Fg%2F11yf_295vb?entry=tts&g_ep=EgoyMDI2MDIxMC4wIPu8ASoASAFQAw%3D%3D&skid=79bfe8fa-2271-4131-806e-eaee591cbfb5" target="_blank" style="color:#3498db; text-decoration:none; font-size:0.85rem; font-weight:bold;" id="txt-map-link">📍 Open in Google Maps</a>
+                <a href="https://maps.google.com/?cid=3407500445686620188&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNl" target="_blank" style="color:#3498db; text-decoration:none; font-size:0.85rem; font-weight:bold;" id="txt-map-link">📍 Open in Google Maps</a>
             </div>
 
             <div style="margin: 20px 0 10px; font-size: 1.1rem; border: 1px dashed #444; padding: 15px; border-radius: 12px;">
@@ -72,16 +85,19 @@
             <button id="main-book-btn" onclick="openBooking()" class="btn">RESERVE MY SEATS</button>
 
             <div id="booking-area">
-                <label id="lbl-name">Full Name</label><input type="text" id="u-name" placeholder="...">
-                <label id="lbl-phone">WhatsApp Number</label><input type="tel" id="u-phone" placeholder="...">
+                <label id="lbl-name">Full Name</label><input type="text" id="u-name">
+                <label id="lbl-phone">WhatsApp Number</label><input type="tel" id="u-phone">
                 <label id="lbl-count">Number of Tickets</label><input type="number" id="u-count" value="1" min="1">
                 <button onclick="sendBooking()" id="confirm-btn" class="btn" style="background:var(--price); color:black;">CONFIRM RESERVATION</button>
             </div>
 
             <div id="success-msg">
                 <h2 id="txt-success-title" style="color:var(--price)">RESERVED!</h2>
-                <p id="txt-success-msg">We've saved your seats for 6:30 PM. Please arrive 15 mins early</p>
-                <button onclick="window.location.reload()" class="btn">OK</button>
+                <div id="qrcode"></div>
+                <p style="color: #f1c40f; font-weight: bold; font-size: 0.8rem;" id="txt-qr-warn">⚠️ DO NOT LOSE THIS QR CODE</p>
+                <button onclick="downloadQR()" class="btn" style="background: #3498db;" id="txt-dl-btn">Download QR Ticket</button>
+                <p id="txt-success-msg">We've saved your seats. See you at the theatreWe've saved your seats for 6:30 PM. Please arrive 15 mins early</p>
+                <button onclick="window.location.reload()" class="btn" style="background:transparent; border:1px solid #444;">Back to Home</button>
             </div>
 
             <div class="contact-section">
@@ -94,9 +110,24 @@
         </div>
     </div>
 
+    <div id="staff-page" class="container">
+        <div class="show-card">
+            <h2 style="color: #8e44ad;">Entry Scanner</h2>
+            <div id="reader" style="width: 100%; border-radius: 12px; overflow: hidden; background: white;"></div>
+            
+            <div id="scan-result-card" class="scan-result-box">
+                <h3 id="res-status" style="margin-top:0;"></h3>
+                <p>👤 <strong>Name:</strong> <span id="res-name"></span></p>
+                <p>🎟️ <strong>Tickets:</strong> <span id="res-count"></span></p>
+                <p>📞 <strong>Phone:</strong> <span id="res-phone"></span></p>
+                <button onclick="restartScanner()" class="btn" style="background:#fff; color:#000; margin-top:15px;">SCAN NEXT</button>
+            </div>
+        </div>
+    </div>
+
     <div id="admin-page" class="container">
         <div class="show-card" style="text-align: left;">
-            <h3 style="color:var(--price)">Admin Settings</h3>
+            <h3 style="color:var(--price)">Show Settings</h3>
             <label>Show Name</label><input type="text" id="i-title">
             <label>Price</label><input type="number" id="i-price">
             <label>Date</label><input type="text" id="i-date">
@@ -106,37 +137,39 @@
     </div>
 
     <script>
-        // REPLACE WITH YOUR ACTUAL APPS SCRIPT URL
-        const API_URL = 'https://script.google.com/macros/s/AKfycbyxArj9vR8uefUnBgJuOgEqZvKcagD3q9BVSs_UFaqq4mBy49QyLy6z0-6Hvl-B0djI/exec'; 
+        // REPLACE WITH YOUR APPS SCRIPT URL
+        const API_URL = 'https://script.google.com/macros/s/AKfycbw8kAV7DGOsWXIdQ4GTUgDlZnjeOG_Pj9gknkcXR3yaNmx9ZCvS3jBvlOpS2GfChbID/exec'; 
         const WA_PHONE = "919674056496";
+        let html5QrCode;
+
+        // Audio Effects
+        const ding = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+        const buzzer = new Audio('https://assets.mixkit.co/active_storage/sfx/2873/2873-preview.mp3');
 
         const translations = {
             en: {
                 date: "📅 Date:", time: "⏰ Time:", venue: "📍 Venue:", map: "📍 Open in Google Maps",
                 seats: "🎟️ Seats Left:", payInfo: "● PAY AT DOOR VIA CASH OR UPI", book: "RESERVE MY SEATS", 
                 name: "Full Name", phone: "WhatsApp Number", count: "Number of Tickets", 
-                confirm: "CONFIRM RESERVATION", success: "RESERVED!", 
-                successMsg: "We've saved your seats for 6:30 PM. Please arrive 15 mins early",
-                help: "Need help?", call: "📞 Call", wa: "💬 WhatsApp",
-                waMsg: "Hi, I want to know about the ticket."
+                confirm: "CONFIRM RESERVATION", success: "RESERVED!", qrWarn: "⚠️ DO NOT LOSE THIS QR CODE",
+                dl: "Download QR Ticket", successMsg: "We've saved your seats for 6:30 PM. Please arrive 15 mins early",
+                help: "Need help?", call: "📞 Call", wa: "💬 WhatsApp", waMsg: "Hi, I want to know about the ticket."
             },
             hi: {
                 date: "📅 दिनांक:", time: "⏰ समय:", venue: "📍 स्थान:", map: "📍 गूगल मैप्स पर देखें",
                 seats: "🎟️ सीटें बची हैं:", payInfo: "● नकद या UPI के माध्यम से गेट पर भुगतान करें", book: "अपनी सीटें बुक करें", 
                 name: "पूरा नाम", phone: "व्हाट्सएप नंबर", count: "टिकटों की संख्या", 
-                confirm: "बुकिंग पक्की करें", success: "सफल बुकिंग!", 
-                successMsg: "हमने आपकी सीटें शाम 6:30 बजे के लिए बचा ली हैं। कृपया 15 मिनट पहले पहुंचें।",
-                help: "क्या आपको मदद चाहिए?", call: "📞 कॉल करें", wa: "💬 व्हाट्सएप",
-                waMsg: "नमस्ते, मुझे टिकट के बारे में जानना है।"
+                confirm: "बुकिंग पक्की करें", success: "सफल बुकिंग!", qrWarn: "⚠️ इस QR कोड को न खोएं",
+                dl: "QR टिकट डाउनलोड करें", successMsg: "हमने आपकी सीटें शाम 6:30 बजे के लिए बचा ली हैं। कृपया 15 मिनट पहले पहुंचें",
+                help: "क्या आपको मदद चाहिए?", call: "📞 कॉल करें", wa: "💬 व्हाट्सएप", waMsg: "नमस्ते, मुझे टिकट के बारे में जानना है।"
             },
             bn: {
                 date: "📅 তারিখ:", time: "⏰ সময়:", venue: "📍 স্থান:", map: "📍 গুগল ম্যাপে দেখুন",
                 seats: "🎟️ আসন ফাঁকা আছে:", payInfo: "● গেটে ক্যাশ বা UPI-এর মাধ্যমে পেমেন্ট করুন", book: "আপনার আসন সংরক্ষণ করুন", 
                 name: "আপনার নাম", phone: "হোয়াটসঅ্যাপ নম্বর", count: "টিকিটের সংখ্যা", 
-                confirm: "বুকিং নিশ্চিত করুন", success: "বুকিং সফল!", 
-                successMsg: "আমরা সন্ধ্যা 6:30 এর জন্য আপনার আসন সংরক্ষণ করেছি। অনুগ্রহ করে 15 মিনিট আগে পৌঁছান।",
-                help: "সাহায্য দরকার?", call: "📞 কল করুন", wa: "💬 হোয়াটসঅ্যাপ",
-                waMsg: "নমস্কার, আমি টিকিট সম্পর্কে জানতে চাই।"
+                confirm: "বুকিং নিশ্চিত করুন", success: "বুকিং সফল!", qrWarn: "⚠️ এই QR কোডটি হারাবেন না",
+                dl: "QR টিকিট ডাউনলোড করুন", successMsg: "আমরা সন্ধ্যা 6:30 এর জন্য আপনার আসন সংরক্ষণ করেছি। অনুগ্রহ করে 15 মিনিট আগে পৌঁছান",
+                help: "সাহায্য দরকার?", call: "📞 কল করুন", wa: "💬 হোয়াটসঅ্যাপ", waMsg: "নমস্কার, আমি টিকিট সম্পর্কে জানতে চাই।"
             }
         };
 
@@ -154,6 +187,8 @@
             document.getElementById('lbl-count').innerText = t.count;
             document.getElementById('confirm-btn').innerText = t.confirm;
             document.getElementById('txt-success-title').innerText = t.success;
+            document.getElementById('txt-qr-warn').innerText = t.qrWarn;
+            document.getElementById('txt-dl-btn').innerText = t.dl;
             document.getElementById('txt-success-msg').innerText = t.successMsg;
             document.getElementById('txt-help-lbl').innerText = t.help;
             document.getElementById('txt-call-btn').innerText = t.call;
@@ -189,17 +224,77 @@
             const name = document.getElementById('u-name').value;
             const phone = document.getElementById('u-phone').value;
             const count = document.getElementById('u-count').value;
-            if(!name || !phone) return alert("Error: Missing Info");
+            if(!name || !phone) return alert("Please fill in all details");
             const btn = document.getElementById('confirm-btn');
-            btn.innerText = "..."; btn.disabled = true;
-            await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "book", name, phone, count }) });
-            document.getElementById('booking-area').style.display = 'none';
-            document.getElementById('success-msg').style.display = 'block';
+            btn.innerText = "Processing..."; btn.disabled = true;
+            
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "book", name, phone, count }) });
+            const result = await res.json();
+            
+            if(result.status === "success") {
+                document.getElementById("qrcode").innerHTML = "";
+                new QRCode(document.getElementById("qrcode"), { text: result.bookingId, width: 160, height: 160 });
+                document.getElementById('booking-area').style.display = 'none';
+                document.getElementById('success-msg').style.display = 'block';
+            }
+        }
+
+        function downloadQR() {
+            const canvas = document.querySelector("#qrcode canvas");
+            const link = document.createElement("a");
+            link.download = "ALT-Ticket.png";
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        function staffLogin() {
+            if (prompt("Staff PIN:") === "2022") {
+                document.getElementById('home-page').style.display = 'none';
+                document.getElementById('lang-bar').style.display = 'none';
+                document.getElementById('staff-page').style.display = 'block';
+                startScanner();
+            }
+        }
+
+        function startScanner() {
+            html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, qrMsg => {
+                html5QrCode.stop(); 
+                verifyTicket(qrMsg);
+            });
+        }
+
+        async function verifyTicket(id) {
+            const resBox = document.getElementById('scan-result-card');
+            resBox.style.display = "block";
+            document.getElementById('res-status').innerText = "Verifying...";
+
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "verify", bookingId: id }) });
+            const result = await res.json();
+
+            if(result.status === "VALID") {
+                ding.play();
+                resBox.className = "scan-result-box valid-border";
+                document.getElementById('res-status').innerText = "✅ ENTRY ALLOWED";
+            } else {
+                buzzer.play();
+                resBox.className = "scan-result-box invalid-border";
+                document.getElementById('res-status').innerText = "❌ " + (result.status === "USED" ? "ALREADY USED" : "INVALID");
+            }
+            document.getElementById('res-name').innerText = result.name || "N/A";
+            document.getElementById('res-count').innerText = result.count || "N/A";
+            document.getElementById('res-phone').innerText = result.phone || "N/A";
+        }
+
+        function restartScanner() {
+            document.getElementById('scan-result-card').style.display = "none";
+            startScanner();
         }
 
         function adminLogin() {
-            if (prompt("PIN:") === "2022") {
+            if (prompt("Admin PIN:") === "2022") {
                 document.getElementById('home-page').style.display = 'none';
+                document.getElementById('lang-bar').style.display = 'none';
                 document.getElementById('admin-page').style.display = 'block';
             }
         }
@@ -215,8 +310,6 @@
         setLang('en');
         loadData();
     </script>
-    
-    <script data-goatcounter="https://gitweb24.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-
+      <script data-goatcounter="https://gitweb24.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
